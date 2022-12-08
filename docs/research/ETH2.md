@@ -1,8 +1,10 @@
-# Ethereum 2.0 Support
+Author: John Whitton
 
-This document reviews the Ethereum 2.0 specifications including Light Client specifications. It does a detailed review of the NEAR Rainbow Bridge implementation and also includes references to Harmony's design to support Mountain Merkle Ranges.
+# Engineering review of Ethereum 2.0 Support by NEAR Rainbow Bridge
 
-Key differences in supporting Ethereum 2.0 (Proof of Stake) vs Proof of Work involves removing the ETHHASH logic and SPV client and potentially replacing with MMR trees per epoch and checkpoints similar to Harmony Light Client on Ethereum. 
+This document reviews the Ethereum 2.0 specifications including Light Client specifications. It provides a detailed review of the NEAR Rainbow Bridge implementation.
+
+Key differences in supporting Ethereum 2.0 (Proof of Stake) vs Proof of Work involves removing the ETHHASH logic and SPV client.
 
 ## Table of Contents
 - [Ethereum 2.0 Support](#ethereum-20-support)
@@ -31,7 +33,6 @@ Key differences in supporting Ethereum 2.0 (Proof of Stake) vs Proof of Work inv
       - [References](#references-1)
     - [Prysm Light Client](#prysm-light-client)
       - [References](#references-2)
-  - [Harmony Merkle Mount Range](#harmony-merkle-mount-range)
   - [Near Rainbow Bridge Review](#near-rainbow-bridge-review)
     - [NEAR Rainbow Bridge: Component Overview](#near-rainbow-bridge-component-overview)
 
@@ -48,6 +49,7 @@ Key differences in supporting Ethereum 2.0 (Proof of Stake) vs Proof of Work inv
 
 
 ## Ethereum 2.0 Light Client Support
+
 How light client implementation and verification of ETH and ETH2 can be done via smart contracts in other protocols.
 
 For this we review three Key items
@@ -57,9 +59,11 @@ For this we review three Key items
 3. Prysm light-client [prototype](https://github.com/jinfwhuang/prysm/tree/jin-light/cmd/light-client)
 
 *Note: Time on Ethereum 2.0 Proof of Stake is divided into slots and epochs. One slot is 12 seconds. One epoch is 6.4 minutes, consisting of 32 slots. One block can be created for each slot.*
+
 ### Light Client Specification
 
 #### Altair Light Client -- Sync Protocol
+
 * [Altair Light Client -- Sync Protocol](https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/light-client/sync-protocol.md): The beacon chain is designed to be light client friendly for constrained environments to access Ethereum with reasonable safety and liveness.
 
     Such environments include resource-constrained devices (e.g. phones for trust-minimized wallets)and metered VMs (e.g. blockchain VMs for cross-chain bridges).
@@ -84,6 +88,7 @@ For this we review three Key items
 
 
 #### The Portal Network
+
 * [The Portal Network](https://github.com/ethereum/portal-network-specs): The Portal Network is an in progess effort to enable lightweight protocol access by resource constrained devices.  The term *"portal"* is used to indicate that these networks provide a *view* into the protocol but are not critical to the operation of the core Ethereum protocol.
 
     The Portal Network is comprised of multiple peer-to-peer networks which together provide the data and functionality necessary to expose the standard [JSON-RPC API](https://eth.wiki/json-rpc/API).  These networks are specially designed to ensure that clients participating in these networks can do so with minimal expenditure of networking bandwidth, CPU, RAM, and HDD resources.
@@ -109,6 +114,7 @@ For this we review three Key items
             The gossip topics described in this document is part of a [proposal](https://ethresear.ch/t/a-beacon-chain-light-client-proposal/11064) for a beacon chain light client.
 
 #### Transaction Proofs
+
 * [Retrieving Beacon State](https://github.com/ethereum/portal-network-specs/blob/master/beacon-chain/beacon-state-network.md): A client has a trusted beacon state root, and it wants to access some parts of the state. Each of the access request corresponds to some leave nodes of the beacon state. The request is a content lookup on a DHT. The response is a Merkle proof.
 
     A Distributed Hash Table (DHT) allows network participants to have retrieve data on-demand based on a content key. A portal-network DHT is different than a traditional one in that each participant could selectively limit its workload by choosing a small interest radius r. A participants only process messages that are within its chosen radius boundary.
@@ -124,6 +130,7 @@ For this we review three Key items
 * TODO: Review of Retrieving a transaction proof not just retrieving data on-demand
 
 #### References
+
 * Ethereum 2.0 Specifications
     * [Beacon Chain Specification](https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md)
     * [Extended light client protocol](https://notes.ethereum.org/@vbuterin/extended_light_client_protocol)
@@ -145,10 +152,12 @@ For this we review three Key items
 * [(WIP) Light client p2p interface Specification](https://github.com/ethereum/consensus-specs/pull/2786): a PR to get the conversation going about a p2p approach.
 
 ### Near Rainbow Bridge Ethereum Light Client Walkthrough
+
 The following is a walkthrough of how a transaction executed on Ethereum is propogated to NEAR's [eth2-client](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/near/eth2-client). See [Cryptographic Primitives](#cryptographic-primitives) for more information on the cryptography used.
 
 
 **At a high level the ethereum light client contract**
+
 * Optionally accepts client updates only from a trusted client
 * Can pause functions
 * Validates a sync committee exists for the curremt slot
@@ -433,6 +442,7 @@ The following is a walkthrough of how a transaction executed on Ethereum is prop
         * `pub fn is_syncing(&self) -> Result<bool, Box<dyn Error>> `
 
 #### Ethereum Light Client Finality Update Verify Components
+
 [finality-update-verify](https://github.com/aurora-is-near/rainbow-bridge/tree/master/eth2near/finality-update-verify) is called from [fn verify_bls_signature_for_finality_update](https://github.com/aurora-is-near/rainbow-bridge/blob/master/eth2near/eth2near-block-relay-rs/src/eth2near_relay.rs#L422) to verify signatures as part of light_client updates. It relies heavily on the [lighthouse](https://github.com/aurora-is-near/lighthouse) codebase for it's consensus and cryptogrphic primitives. See [Cryptographic Primitives](#cryptographic-primitives) for more information.
 
 * Dependencies in [Cargo.toml](https://github.com/aurora-is-near/rainbow-bridge/blob/master/eth2near/finality-update-verify/Cargo.toml)
@@ -450,6 +460,7 @@ The following is a walkthrough of how a transaction executed on Ethereum is prop
     * `pub fn is_correct_finality_update(ethereum_network: &str, light_client_update: &LightClientUpdate,   sync_committee: SyncCommittee,) -> Result<bool, Box<dyn Error>> `
 
 #### Cryptographic Primitives
+
 Following are cryptographic primitives used in the [eth2-client contract](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/near/eth2-client) and [finality-update-verify](https://github.com/aurora-is-near/rainbow-bridge/tree/master/eth2near/finality-update-verify). Many are from the [lighthouse](https://github.com/aurora-is-near/lighthouse) codebase. Specifically [consensus](https://github.com/aurora-is-near/lighthouse/tree/stable/consensus) and [crypto](https://github.com/aurora-is-near/lighthouse/tree/stable/crypto) functions.
 
 Some common primitives
@@ -536,6 +547,7 @@ Some Primitives from NEAR Rainbow Bridge
     * `pub fn calculate_min_storage_balance_for_submitter(max_submitted_blocks_by_account: u32,) -> Balance `
 
 ### Near Rainbow Bridge Near Light Client Walkthrough
+
 The following is a walkthrough of how a transaction executed on NEAR is propogated to Ethereum's [nearbridge](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/eth/nearbridge). See [nearbridge Cryptographic Primitives](#nearbridge-cryptographic-primitives) for more information on the cryptography used.
 
 **NearOnEthClient Overview**
@@ -557,6 +569,7 @@ The following is a walkthrough of how a transaction executed on NEAR is propogat
 > Sending assets from NEAR back to Ethereum currently takes a maximum of sixteen hours (due to Ethereum finality times) and costs around $60 (due to ETH gas costs and at current ETH price). These costs and speeds will improve in the near future.
 
 #### NEAR to Ethereum block propagation costing
+
 The following links provide the production Ethereum addresses and blockexplorer views for NearBridge.sol and the ERC20 Locker
 * [Ethereum Mainnet Bridge addresses and parameters](https://github.com/aurora-is-near/rainbow-bridge-client/tree/main/packages/client#ethereum-mainnet-bridge-addresses-and-parameters)
 * [NearBridge.sol on Ethereum Block Explorer](https://etherscan.io/address/0x3fefc5a4b1c02f21cbc8d3613643ba0635b9a873)
@@ -570,6 +583,7 @@ At time of writing (Oct 26th, 2022).
 * *Note: Infrastructure costs for running relayer, watchdog, etc are not included.*
 
 #### NEAR to Ethereum block propagation flow
+
 [NEAR Light Client Documentation](https://nomicon.io/ChainSpec/LightClient) gives an overview of how light clients work. At a high level the light client needs to fetch at least one block per [epoch](https://docs.near.org/concepts/basics/epoch) i.e. every 42,200 blocks or approxmiately 12 hours. Also Having the LightClientBlockView for block B is sufficient to be able to verify any statement about state or outcomes in any block in the ancestry of B (including B itself).
 
 The current scripts and codebase indicates that a block would be fetched every 30 seconds with a max delay of 10 seconds. It feels that this would be expensive to update Ethereum so frequently. [NEAR's bridge documentation](https://near.org/bridge/) states *Sending assets from NEAR back to Ethereum currently takes a maximum of sixteen hours (due to Ethereum finality times)*. This seems to align with sending light client updates once per NEAR epoch. The block fetch period is configurable in the relayer.
@@ -651,6 +665,7 @@ Block Submitters stake ETH to be allowed to submit blocks which get's slashed if
 
 
 #### NEAR to Ethereum watchdog
+
 The [watchdog](https://github.com/aurora-is-near/rainbow-bridge/blob/master/near2eth/watchdog/index.js) runs every 10 seconds and validates blocks on `NearBridge.sol` challenging blocks with incorrect signatures. *Note: It uses [heep-prometheus](https://github.com/aurora-is-near/rainbow-bridge/blob/master/utils/http-prometheus.js) for monitoring and storing block and producer information using `gauges` and `counters`.*
 
 * [watchdog is started](https://github.com/aurora-is-near/rainbow-bridge/blob/master/cli/commands/start/watchdog.js) from the CLI
@@ -755,6 +770,7 @@ The [watchdog](https://github.com/aurora-is-near/rainbow-bridge/blob/master/near
         * `function _computeRoot(bytes32 node, ProofDecoder.MerklePath memory proof) internal pure returns (bytes32 hash)`
 
 #### NEAR Rainbow Bridge Utils
+
 [rainbow-bridge-utils](https://github.com/aurora-is-near/rainbow-bridge/tree/master/utils) provides a set of utilities for the near rainbow bridge written in javascript.
 * It has the following [dependencies](https://github.com/aurora-is-near/rainbow-bridge/blob/master/utils/package.json)
     * [bn.js](https://www.npmjs.com/package/bn.js): Big number implementation in pure javascript
@@ -884,8 +900,8 @@ The [watchdog](https://github.com/aurora-is-near/rainbow-bridge/blob/master/near
   
 
 
-
 ### Token Transfer Process Flow
+
 The [NEAR Rainbow Bridge](https://near.org/bridge/) uses ERC-20 connectors which are developed in [rainbow-token-connector](https://github.com/aurora-is-near/rainbow-token-connector) and [rainbow-bridge-client](https://github.com/aurora-is-near/rainbow-bridge-client). Also see [eth2near-fun-transfer.md](https://github.com/aurora-is-near/rainbow-bridge/blob/master/docs/workflows/eth2near-fun-transfer.md).
 
 Following is an overview of timing and anticipated costs
@@ -1068,6 +1084,7 @@ cargo test --all
         * [erc20-connector](https://github.com/aurora-is-near/rainbow-token-connector/tree/master/erc20-connector): has [ERC20Locker.sol](https://github.com/aurora-is-near/rainbow-token-connector/blob/master/erc20-connector/contracts/ERC20Locker.sol) which is used to lock and unlock tokens. It is linked to the bridge token factory on NEAR side. It also links to the prover that it uses to unlock the tokens. (see [here](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/eth/nearbridge/contracts))
 
 #### References
+
 * [Lighthouse Documentation](https://lighthouse-book.sigmaprime.io/): ETH 2.0 Consensus Client Lighthouse documentation
 * [Lighthouse Github](https://github.com/sigp/lighthouse): ETH 2.0 Consensus Client Lighthouse Github
 * [Lighthouse: Blog](https://lighthouse-blog.sigmaprime.io/):  ETH 2.0 Consensus Client Lighthouse Blog
@@ -1085,14 +1102,8 @@ cargo test --all
 * [Prysm: light-client server PR](https://github.com/prysmaticlabs/prysm/pull/10034): a feature PR that implements the basic production level changes to Prysm to comply as a light-client server to begin serving light client requests
 
 
-
-
-## Harmony Merkle Mount Range 
-
-* Harmony [MMR PR Review](https://github.com/harmony-one/harmony/pull/3872) and [latest PR](https://github.com/harmony-one/harmony/pull/4198/files) uses Merkle Mountain Ranges to facilitate light client development against Harmony's sharded Proof of Stake Chain
-
-
 ## Near Rainbow Bridge Review
+
 The [NEAR Rainbow bridge](https://near.org/bridge/) is in [this github repository](https://github.com/aurora-is-near/rainbow-bridge) and is supported by [Aurora-labs](https://github.com/aurora-is-near). 
 
 It recently provided support for ETH 2.0 in this [Pull Request (762)](https://github.com/aurora-is-near/rainbow-bridge/pull/762). 
@@ -1308,6 +1319,7 @@ The following smart contracts are deployed on NEAR and work in conjunction with 
             ```
 
 The following smart contracts are deployed on Ethereum and used for propogating blocks from NEAR to Ethereum.
+
 * [Smart Contracts deployed on Ethereum](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/eth) including
     * [Near Bridge Contracts](https://github.com/aurora-is-near/rainbow-bridge/tree/master/contracts/eth/nearbridge/contracts) including [NearBridge.sol](https://github.com/aurora-is-near/rainbow-bridge/blob/master/contracts/eth/nearbridge/contracts/NearBridge.sol) which the interface [INearBridge.sol](https://github.com/aurora-is-near/rainbow-bridge/blob/master/contracts/eth/nearbridge/contracts/INearBridge.sol)
     * Interface Overview
