@@ -1,6 +1,11 @@
-Author: John Whitton
-
-# Engineering review of Ethereum 2.0 Support by NEAR Rainbow Bridge
+---
+layout: post
+author: John Whitton @ Iso Lab
+title: "Engineering review of Ethereum 2.0 Support by NEAR Rainbow Bridge"
+excerpt: "This document reviews the Ethereum 2.0 specifications including Light Client specifications. It provides a detailed review of the NEAR Rainbow Bridge implementation."
+redirect_from:
+  - /blogs/eth2-near
+--- 
 
 This document reviews the Ethereum 2.0 specifications including Light Client specifications. It provides a detailed review of the NEAR Rainbow Bridge implementation.
 
