@@ -76,7 +76,10 @@ However, Ethereum 2.0 consensus blocks are signed by BLS12-381 signatures, inclu
 This means, until native primitives or precompiles become available, we need to rely on off-chain verification for these signatures. In follow up articles, we will look into the detailed steps of how ZKP systems can solve this problem, and compare the performance among the latest systems such as Plonky2/3, Halo2, and others.
 
 
-[^1] See [Ethereum block header](https://github.com/ethereum/go-ethereum/blob/27e59827d804b0112c4213465ff3b902e25cb6d9/core/types/block.go#L65) for reference, which many non-Ethereum chains derive their design from.
-[^2] The exact amount is unknown at this time. We are not aware of any smart contract implementation for computing the pairing in BLS12-381 signature or for verifying the signature. We have seen some [unfinished implementation](https://github.com/semaraugusto/bls-verification-contract) but have not found any working prototype.
-[^3] Linear subnets such as C-chain and P-chain. We are not considering subnets based on the non-linear DAG version (such as X-chain) since time and order are not well-defined in those chains and the fundamental differences in consensus structure would make bridging substantially more difficult. See [official documentations](https://docs.avax.network/learn/avalanche/avalanche-consensus#snowball) for a more comprehensive explaination.
-[^4] There might happen, but has been postponed multiple times in previous forks. See [discussions](https://ethereum-magicians.org/t/eip-2537-bls12-precompile-discussion-thread/4187/31). Thus, a wiser choice is to develop workaround via ZKP rather than relying on hope alone.
+[^1]: See [Ethereum block header](https://github.com/ethereum/go-ethereum/blob/27e59827d804b0112c4213465ff3b902e25cb6d9/core/types/block.go#L65) for reference, which many non-Ethereum chains derive their design from.
+
+[^2]: The exact amount is unknown at this time. We are not aware of any smart contract implementation for computing the pairing in BLS12-381 signature or for verifying the signature. We have seen some [unfinished implementation](https://github.com/semaraugusto/bls-verification-contract) but have not found any working prototype.
+
+[^3]: Linear subnets such as C-chain and P-chain. We are not considering subnets based on the non-linear DAG version (such as X-chain) since time and order are not well-defined in those chains and the fundamental differences in consensus structure would make bridging substantially more difficult. See [official documentations](https://docs.avax.network/learn/avalanche/avalanche-consensus#snowball) for a more comprehensive explaination.
+
+[^4]: There might happen, but has been postponed multiple times in previous forks. See [discussions](https://ethereum-magicians.org/t/eip-2537-bls12-precompile-discussion-thread/4187/31). Thus, a wiser choice is to develop workaround via ZKP rather than relying on hope alone.
