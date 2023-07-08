@@ -1,8 +1,7 @@
 ---
 layout: post
 author: Aaron Li @ Iso Lab
-title: "Trustless Bridging Technical Problems - Part 2: Bridge Cost Tradeoff"
-excerpt: "How do we reduce on-chain storage and computation cost for bridging, and what's the catch?"
+title: "Trustless Bridging Technical Problems - Part 2: Bridge Computations On-Chain v. Off-Chain"
 redirect_from:
   - /blogs/problems-2
   - /blogs/bridge-cost-tradeoff
